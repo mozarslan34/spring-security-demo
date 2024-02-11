@@ -3,7 +3,7 @@ server:
   forward-headers-strategy: framework
 spring:
   application:
-    name: Metis
+    name: security-demo
   datasource:
     username: postgres
     url: jdbc:postgresql://localhost:5436/test?useSSL=false
@@ -30,4 +30,9 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
+  cache:
+    type: none
 
+logging:
+  level:
+    org.springframework.security: TRACE

@@ -1,15 +1,14 @@
 package com.example.springsecuritydemo.controller;
 
 import com.example.springsecuritydemo.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.PostConstruct;
 
 /**
  * @author Mertcan Özarslan
@@ -20,26 +19,38 @@ import javax.annotation.PostConstruct;
 public class UserController {
 
     private final UserService userService;
-    @Autowired
-    PasswordEncoder passwordEncoder;
 
     @GetMapping("/home")
-    public String home(){
+    public String home() {
         return "home";
     }
 
-    @PostConstruct
-    public void createUser(){
-        userService.createUserWithRole(passwordEncoder);
+    // create dummy user to db
+//    @PostConstruct
+    public void createUser() {
+        userService.createUserWithRole();
+    }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
     }
 
     @GetMapping("/auth")
-    public String auth(){
-        System.out.println("test");
+    public String auth() {
         return "welcome admin";
     }
 
+    @GetMapping(value = "/logout-new")
+    public String logoutPage(HttpServletRequest request, HttpServletResponse response) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
+        SecurityContextHolder.getContext().setAuthentication(null);
 
+        return "logged out";
+    }
 
 
 }
